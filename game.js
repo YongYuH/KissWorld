@@ -4478,7 +4478,7 @@ function drawIntroInstructions() {
     ctx.fillText("感謝素材", canvas.width / 2, 248);
     ctx.fillStyle = "#eaf7ff";
     ctx.font = "bold 28px 'Segoe UI', 'Noto Sans TC', sans-serif";
-    ctx.fillText("BGM: 大鳥葛格", canvas.width / 2, 332);
+    ctx.fillText("BGM: 大鳥葛格, 配音: 久田Hakuzen", canvas.width / 2, 332);
     ctx.fillText("音效: gorbygorby", canvas.width / 2, 386);
     ctx.restore();
     return;
