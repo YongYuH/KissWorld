@@ -1019,6 +1019,8 @@ const ENDING_MEDIA = {
   ending5: "./assests/ending/ending5.png",
 };
 
+const RUN_SPEED_MULTIPLIER = 2;
+
 const player = createActor({
   id: "hero",
   label: "親親獸",
@@ -1028,6 +1030,7 @@ const player = createActor({
   speed: 240,
   direction: "down",
   tint: "#ff7ca0",
+  isRunning: false,
 });
 
 const vtNpcs = [
@@ -2235,7 +2238,7 @@ setInterval(saveGame, 5000);
 window.addEventListener("keydown", (event) => {
   unlockAudioByUserGesture();
   const key = event.key.toLowerCase();
-  if (["arrowup", "arrowdown", "arrowleft", "arrowright", "w", "a", "s", "d", "z", "x"].includes(key) || event.code === CONFIRM_CODE || event.code === CANCEL_CODE) {
+  if (["arrowup", "arrowdown", "arrowleft", "arrowright", "w", "a", "s", "d", "z", "x", "r"].includes(key) || event.code === CONFIRM_CODE || event.code === CANCEL_CODE) {
     event.preventDefault();
   }
 
@@ -2336,6 +2339,11 @@ window.addEventListener("keydown", (event) => {
     } else {
       interact();
     }
+  }
+
+  if (event.code === "KeyR" && !event.repeat) {
+    player.isRunning = !player.isRunning;
+    addWorldFloatingText(player.x, player.y - 100, player.isRunning ? "跑步模式" : "走路模式", player.isRunning ? "#ff3448" : "#ffffff", { life: 1.2 });
   }
 });
 
@@ -3651,12 +3659,18 @@ function updatePlayer(delta) {
   if (keys.has("arrowup") || keys.has("w")) moveY -= 1;
   if (keys.has("arrowdown") || keys.has("s")) moveY += 1;
 
+  let currentSpeed = player.speed;
+
+  if (player.isRunning) {
+    currentSpeed *= RUN_SPEED_MULTIPLIER;
+  }
+
   if (moveX || moveY) {
     const length = Math.hypot(moveX, moveY) || 1;
     moveX /= length;
     moveY /= length;
-    player.x += moveX * player.speed * delta;
-    player.y += moveY * player.speed * delta * 0.72;
+    player.x += moveX * currentSpeed * delta;
+    player.y += moveY * currentSpeed * delta * 0.72;
     player.direction = axisToDirection(moveX, moveY);
     player.walkTime += delta * 7.6;
   } else {
@@ -4443,6 +4457,7 @@ function drawTitleScreen() {
       "方向鍵 / WASD：移動角色或切換選項",
       "Z：確認、對話、互動、戰鬥轉盤停止",
       "X：取消、返回、開啟/關閉選單",
+      "R：切換走路／跑步模式（跑步速度為走路的 2 倍）",
       "戰鬥時：每按一次 Z 停下一列，五列停止後結算",
       "",
       "按 Z 或 X 返回主選單",
@@ -4490,6 +4505,7 @@ function drawIntroInstructions() {
     "↑ ↓ ← →：移動 / 選擇",
     "Z：確認 / 互動 / 推進對話 / 戰鬥操作",
     "X：取消 / 返回 / 開啟選單",
+    "R：切換走路／跑步模式（跑步速度為走路的 2 倍）",
   ];
   ctx.font = "24px 'Segoe UI', 'Noto Sans TC', sans-serif";
   lines.forEach((line, index) => {
